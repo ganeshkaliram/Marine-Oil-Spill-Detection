@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeViz - Algorithm Visualizer</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="noise-overlay"></div>
+    
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="brand-icon">&#60;/&#62;</span>
+            <span class="brand-text">CodeViz</span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-link active">Visualize</a>
+            <a href="#" class="nav-link">Algorithms</a>
+            <a href="#" class="nav-link">About</a>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="hero-bg-gradient"></div>
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="badge-dot"></span>
+                    Interactive Algorithm Learning
+                </div>
+                <h1 class="hero-title">
+                    Visualize. Understand.<br>
+                    <span class="gradient-text">Master Algorithms.</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Search any coding question and get instant animated visualizations, 
+                    step-by-step code tracing, and clear explanations.
+                </p>
+                
+                <div class="search-container">
+                    <div class="search-wrapper">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                        </svg>
+                        <input type="text" id="searchInput" class="search-input" 
+                               placeholder="Search coding questions... (e.g., Binary Search, Two Sum, Bubble Sort)">
+                        <div class="search-shortcut">
+                            <kbd>Enter</kbd>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quick-tags">
+                    <span class="tag-label">Popular:</span>
+                    <button class="quick-tag" data-query="binary search">Binary Search</button>
+                    <button class="quick-tag" data-query="two sum">Two Sum</button>
+                    <button class="quick-tag" data-query="bubble sort">Bubble Sort</button>
+                    <button class="quick-tag" data-query="linked list">Linked List</button>
+                    <button class="quick-tag" data-query="fibonacci">Fibonacci</button>
+                    <button class="quick-tag" data-query="bfs">BFS</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="results-section" id="resultsSection" style="display:none;">
+            <div class="results-container">
+                <div class="result-header">
+                    <button class="back-btn" id="backBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                            <path d="m15 18-6-6 6-6"/>
+                        </svg>
+                        Back to Search
+                    </button>
+                    <h2 class="result-title" id="resultTitle"></h2>
+                </div>
+
+                <div class="analysis-card" id="analysisCard">
+                    <div class="analysis-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 16v-4"/>
+                            <path d="M12 8h.01"/>
+                        </svg>
+                    </div>
+                    <div class="analysis-content">
+                        <h3>Problem Analysis</h3>
+                        <p id="analysisText"></p>
+                    </div>
+                    <div class="analysis-meta">
+                        <span class="difficulty-badge" id="difficultyBadge"></span>
+                        <span class="time-badge" id="timeBadge"></span>
+                    </div>
+                </div>
+
+                <div class="visualization-panel">
+                    <div class="panel-header">
+                        <h3>Interactive Visualization</h3>
+                        <div class="controls">
+                            <button class="control-btn" id="playBtn" title="Play">
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                                    <polygon points="5,3 19,12 5,21"/>
+                                </svg>
+                            </button>
+                            <button class="control-btn" id="pauseBtn" title="Pause" style="display:none;">
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                                    <rect x="6" y="4" width="4" height="16"/>
+                                    <rect x="14" y="4" width="4" height="16"/>
+                                </svg>
+                            </button>
+                            <button class="control-btn" id="stepBtn" title="Step Forward">
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                                    <polygon points="5,3 15,12 5,21"/>
+                                    <rect x="16" y="3" width="3" height="18"/>
+                                </svg>
+                            </button>
+                            <button class="control-btn" id="resetBtn" title="Reset">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                                    <path d="M3 3v5h5"/>
+                                </svg>
+                            </button>
+                            <div class="speed-control">
+                                <label>Speed:</label>
+                                <select id="speedSelect">
+                                    <option value="2000">0.5x</option>
+                                    <option value="1000" selected>1x</option>
+                                    <option value="500">2x</option>
+                                    <option value="250">4x</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="viz-canvas-wrapper">
+                        <canvas id="vizCanvas"></canvas>
+                        <div class="step-description" id="stepDescription">
+                            Press Play or Step to begin visualization
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-panel">
+                    <div class="panel-header">
+                        <h3>Code with Tracing</h3>
+                        <div class="code-tabs">
+                            <button class="code-tab active" data-lang="python">Python</button>
+                            <button class="code-tab" data-lang="javascript">JavaScript</button>
+                            <button class="code-tab" data-lang="java">Java</button>
+                        </div>
+                    </div>
+                    <div class="code-wrapper">
+                        <div class="line-numbers" id="lineNumbers"></div>
+                        <pre class="code-block"><code id="codeContent"></code></pre>
+                    </div>
+                    <div class="trace-panel" id="tracePanel">
+                        <h4>Execution Trace</h4>
+                        <div class="trace-log" id="traceLog"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features-section" id="featuresSection">
+            <div class="features-header">
+                <h2>Why CodeViz?</h2>
+                <p>Interactive learning through visual understanding</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32">
+                            <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                            <circle cx="12" cy="12" r="4"/>
+                        </svg>
+                    </div>
+                    <h3>Step-by-Step Animation</h3>
+                    <p>Watch algorithms come alive with smooth, frame-by-frame animations showing every operation.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32">
+                            <polyline points="16,18 22,12 16,6"/>
+                            <polyline points="8,6 2,12 8,18"/>
+                        </svg>
+                    </div>
+                    <h3>Live Code Tracing</h3>
+                    <p>Follow along as each line of code executes with real-time variable state tracking.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                        </svg>
+                    </div>
+                    <h3>Smart Search</h3>
+                    <p>Find any coding problem instantly and get visual explanations with complex analysis.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                            <path d="M2 17l10 5 10-5"/>
+                            <path d="M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <h3>Multi-Language</h3>
+                    <p>View code solutions in Python, JavaScript, or Java with syntax highlighting.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="browse-section" id="browseSection">
+            <h2>Browse Algorithms</h2>
+            <div class="algorithm-grid" id="algorithmGrid"></div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <span class="brand-icon">&#60;/&#62;</span>
+                <span>CodeViz</span>
+            </div>
+            <p>Interactive Algorithm Visualization Platform</p>
+        </div>
+    </footer>
+
+    <script src="algorithms.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
