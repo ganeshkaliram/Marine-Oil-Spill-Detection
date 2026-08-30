@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | SIH 2026</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+    <!-- ================= TOP BAR ================= -->
+    <nav>
+        <div class="nav-inner">
+            <a href="index.html" class="logo">
+                <span class="logo-badge">SIH</span>
+                <span>SIH 2026<small>Team Formation</small></span>
+            </a>
+            <ul class="dash-nav">
+                <li><a href="#t-teams" class="tab-link active" data-tab="teams">Teams</a></li>
+                <li><a href="#t-myteam" class="tab-link" data-tab="myteam">My Team</a></li>
+                <li><a href="#t-find" class="tab-link" data-tab="find">Find Members</a></li>
+            </ul>
+            <div class="user-chip">
+                <div class="user-chip-info">
+                    <strong id="userName">—</strong>
+                    <small id="userDept">—</small>
+                </div>
+                <button id="logoutBtn" class="btn btn-ghost">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+
+        <!-- ================= BROWSE TEAMS ================= -->
+        <section class="dash-section active" id="t-teams">
+            <div class="section-head">
+                <div class="kicker">Find Your Squad</div>
+                <h2>All Teams &amp; Members</h2>
+                <p>Browse every team. If you're not in a team yet, request to join one or create your own.</p>
+            </div>
+            <div class="teams-grid" id="teamsGrid">
+                <div class="empty-state">Loading teams...</div>
+            </div>
+        </section>
+
+        <!-- ================= MY TEAM ================= -->
+        <section class="dash-section" id="t-myteam">
+            <div class="section-head">
+                <div class="kicker">Your Squad</div>
+                <h2>My Team</h2>
+                <p>Manage your team, review join requests and invitations.</p>
+            </div>
+
+            <div id="noTeamBlock">
+                <div class="dash-panel">
+                    <h3>You're not in a team yet</h3>
+                    <p style="color: var(--muted); margin-bottom: 18px;">
+                        Create a team and invite teammates by searching their tech stack
+                        (frontend, ML, UI/UX...), or request to join one from the <strong>Teams</strong> tab.
+                    </p>
+                    <form id="createTeamForm" class="form-grid">
+                        <div class="field">
+                            <label for="ctName">Team Name <span class="req">*</span></label>
+                            <input type="text" id="ctName" required placeholder="e.g. CodeSprint">
+                        </div>
+                        <div class="field">
+                            <label for="ctProblem">Problem Statement</label>
+                            <select id="ctProblem"></select>
+                        </div>
+                        <div class="field full">
+                            <label for="ctLooking">Skills You Need (comma separated)</label>
+                            <input type="text" id="ctLooking" placeholder="e.g. Frontend, ML, UI/UX Designer">
+                        </div>
+                        <div class="field full">
+                            <button type="submit" class="btn btn-primary">Create My Team</button>
+                        </div>
+                        <div class="field full" id="createTeamNotice"></div>
+                    </form>
+                    <div class="team-rules" style="margin-top: 18px;">
+                        <strong>Team rules:</strong>
+                        <span>exactly 6 members</span>
+                        <span>at least 2 girls</span>
+                        <span>members from at least 2 departments</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="myTeamBlock" class="hidden">
+                <div class="team-card" id="myTeamCard"></div>
+                <div style="height: 30px;"></div>
+                <div class="dash-panel">
+                    <h3>Invites &amp; Requests</h3>
+                    <div id="invitesBox">
+                        <div class="empty-state">Loading invites...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= FIND MEMBERS ================= -->
+        <section class="dash-section" id="t-find">
+            <div class="section-head">
+                <div class="kicker">Build Your Dream Team</div>
+                <h2>Find Members by Tech Stack</h2>
+                <p>Search students by tech stack (frontend, ML, backend...), language, name, or department, then invite them to your team.</p>
+            </div>
+
+            <div class="find-toolbar">
+                <input type="search" id="userSearch" placeholder="e.g. frontend ml react">
+                <button class="btn btn-navy" id="searchBtn">Search</button>
+            </div>
+            <div class="search-hint">
+                Try: <button class="chip" data-q="Frontend">Frontend</button>
+                <button class="chip" data-q="ML">ML</button>
+                <button class="chip" data-q="UI/UX">UI/UX</button>
+                <button class="chip" data-q="Backend">Backend</button>
+                <button class="chip" data-q="IoT">IoT</button>
+                <button class="chip" data-q="Flutter">Flutter</button>
+            </div>
+
+            <div class="users-grid" id="usersGrid">
+                <div class="empty-state">Search for members to invite. Results appear here.</div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container footer-bottom" style="border-top: none;">
+            &copy; 2026 College SIH 2026 Coordination Committee. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>

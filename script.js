@@ -4,7 +4,7 @@ let isPlaying = false;
 let animationTimer = null;
 let currentStep = 0;
 let animationSteps = [];
-let speed = 1000;
+let speed = 2000;
 
 const canvas = document.getElementById('vizCanvas');
 const ctx = canvas.getContext('2d');
@@ -57,21 +57,149 @@ document.querySelectorAll('.code-tab').forEach(tab => {
     });
 });
 
-function performSearch() {
-    const query = searchInput.value.toLowerCase().trim();
+async function performSearch() {
+    const query = searchInput.value.trim();
     if (!query) return;
 
     const results = algorithms.filter(algo => {
-        return algo.name.toLowerCase().includes(query) ||
-               algo.category.toLowerCase().includes(query) ||
-               algo.keywords.some(k => k.includes(query));
+        const q = query.toLowerCase();
+        return algo.name.toLowerCase().includes(q) ||
+               algo.category.toLowerCase().includes(q) ||
+               algo.keywords.some(k => k.includes(q));
     });
 
     if (results.length > 0) {
         showResult(results[0]);
-    } else {
-        alert('No matching algorithm found. Try: binary search, two sum, bubble sort, fibonacci, bfs, dfs, linked list, merge sort, quick sort, selection sort, insertion sort, linear search, power of two');
+        return;
     }
+
+    showLoadingState(query);
+
+    try {
+        const response = await fetch('/api/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ question: query })
+        });
+
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.error || 'API request failed');
+        }
+
+        const aiResult = await response.json();
+        const algo = convertAIResult(aiResult, query);
+        showResult(algo);
+
+    } catch (err) {
+        console.error('AI API error:', err);
+        alert('Could not analyze question: ' + err.message + '\n\nTry one of the pre-built algorithms: binary search, two sum, bubble sort, fibonacci, bfs, dfs, linked list, merge sort, quick sort.');
+        showHome();
+    }
+}
+
+function showLoadingState(query) {
+    hero.style.display = 'none';
+    featuresSection.style.display = 'none';
+    browseSection.style.display = 'none';
+    resultsSection.style.display = 'block';
+    document.getElementById('resultTitle').textContent = query;
+    document.getElementById('analysisText').textContent = 'Analyzing with AI... Please wait.';
+    document.getElementById('difficultyBadge').textContent = '...';
+    document.getElementById('timeBadge').textContent = '...';
+    document.getElementById('lineNumbers').innerHTML = '';
+    document.getElementById('codeContent').innerHTML = '<span style="color:#6b6b80">Generating code...</span>';
+    document.getElementById('traceLog').innerHTML = '';
+    document.getElementById('stepDescription').textContent = 'AI is generating visualization...';
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    ctx.fillStyle = '#DA7014';
+    ctx.font = '600 16px Inter';
+    ctx.textAlign = 'center';
+    ctx.fillText('Analyzing with AI...', cx, cy - 10);
+    ctx.fillStyle = '#a0a0b5';
+    ctx.font = '400 13px Inter';
+    ctx.fillText('Generating visualization for: ' + query, cx, cy + 15);
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function convertAIResult(ai, originalQuery) {
+    const codeLines = {};
+    ['python', 'javascript', 'java'].forEach(lang => {
+        const lines = ai.code?.[lang] || [];
+        codeLines[lang] = lines.map(line => {
+            const tokens = [];
+            const str = line;
+            const patterns = [
+                { regex: /(#[^\n]*|\/\/[^\n]*)/, type: 'comment' },
+                { regex: /\b(def|function|class|if|else|elif|else if|for|while|return|import|from|let|const|var|new|public|private|void|int|string|boolean|True|False|None|null|undefined|in|not|and|or|try|catch|finally|throw|break|continue|switch|case|default|do|this|super|extends|implements|static|final|abstract|interface)\b/, type: 'keyword' },
+                { regex: /\b(\d+\.?\d*)\b/, type: 'number' },
+                { regex: /(["'`])(?:(?!\1|\\).|\\.)*\1/, type: 'string' },
+                { regex: /\b([A-Z]\w*)\b/, type: 'type' },
+                { regex: /(\w+)\s*\(/, type: 'function' },
+                { regex: /([=+\-*/<>!&|^~%]+)/, type: 'operator' },
+            ];
+
+            let remaining = str;
+            let pos = 0;
+            const parts = [];
+
+            while (pos < str.length) {
+                let earliest = null;
+                let earliestType = '';
+                let earliestIdx = str.length;
+
+                for (const p of patterns) {
+                    const m = str.slice(pos).match(p.regex);
+                    if (m && m.index < earliestIdx) {
+                        earliest = m;
+                        earliestType = p.type;
+                        earliestIdx = m.index;
+                    }
+                }
+
+                if (earliest && earliestIdx < str.length) {
+                    if (earliestIdx > 0) {
+                        parts.push({ type: 'plain', val: str.slice(pos, pos + earliestIdx) });
+                    }
+                    parts.push({ type: earliestType, val: earliest[0] });
+                    pos += earliestIdx + earliest[0].length;
+                } else {
+                    parts.push({ type: 'plain', val: str.slice(pos) });
+                    break;
+                }
+            }
+
+            return { text: line, tokens: parts.length ? parts : [{ type: 'plain', val: line || ' ' }] };
+        });
+    });
+
+    const steps = (ai.steps || []).map((s, i) => ({
+        type: ai.vizType || 'array',
+        data: [...(ai.vizData || [1,2,3,4,5])],
+        line: s.line || 0,
+        desc: s.desc || `Step ${i + 1}`,
+        state: s.state || {}
+    }));
+
+    return {
+        id: 'ai-' + Date.now(),
+        name: ai.name || originalQuery,
+        category: ai.category || 'General',
+        difficulty: ai.difficulty || 'Medium',
+        time: ai.time || 'O(n)',
+        description: ai.description || `AI-generated analysis for: ${originalQuery}`,
+        keywords: ai.keywords || [originalQuery.toLowerCase()],
+        vizType: ai.vizType || 'array',
+        vizData: ai.vizData || [1, 2, 3, 4, 5],
+        target: ai.vizConfig?.target || ai.vizConfig?.searchTarget,
+        code: codeLines,
+        aiSteps: steps,
+        isAI: true
+    };
 }
 
 function showResult(algo) {
@@ -125,11 +253,93 @@ function escHtml(str) {
 
 function generateAnimationSteps(algo) {
     animationSteps = [];
+
+    if (algo.isAI && algo.aiSteps && algo.aiSteps.length > 0) {
+        animationSteps = algo.aiSteps.map((step, idx) => {
+            const data = step.data || [...algo.vizData];
+            const vizType = algo.vizType || 'array';
+            const desc = (step.desc || '').toLowerCase();
+            const state = step.state || {};
+
+            const enriched = {
+                ...step,
+                data: data,
+                target: algo.target
+            };
+
+            if (vizType === 'sort' || desc.includes('sort') || desc.includes('swap') || desc.includes('compare')) {
+                enriched.type = 'sort';
+                enriched.comparing = undefined;
+                enriched.swapping = undefined;
+                enriched.sorted = [];
+
+                const arrIdx = (v) => {
+                    if (typeof v === 'number' && v >= 0 && v < data.length) return v;
+                    return undefined;
+                };
+
+                if (state.i !== undefined && state.j !== undefined) {
+                    enriched.comparing = [arrIdx(state.i), arrIdx(state.j)].filter(x => x !== undefined);
+                } else if (state.minIdx !== undefined && state.j !== undefined) {
+                    enriched.comparing = [arrIdx(state.minIdx), arrIdx(state.j)].filter(x => x !== undefined);
+                } else if (state.left !== undefined && state.right !== undefined) {
+                    enriched.comparing = [arrIdx(state.left), arrIdx(state.right)].filter(x => x !== undefined);
+                }
+
+                if (desc.includes('swap')) {
+                    enriched.swapping = enriched.comparing;
+                    enriched.comparing = undefined;
+                }
+
+                if (desc.includes('sorted') || desc.includes('placed') || desc.includes('complete')) {
+                    enriched.sorted = data.map((_, i) => i);
+                } else if (state.sorted) {
+                    enriched.sorted = Array.isArray(state.sorted) ? state.sorted : [];
+                }
+            } else if (vizType === 'tree' || desc.includes('recursive') || desc.includes('fibonacci') || desc.includes('fib')) {
+                enriched.type = 'tree';
+                enriched.node = state.node || state.current || `node-${idx}`;
+                enriched.val = state.result !== undefined ? state.result : (state.val !== undefined ? state.val : null);
+                enriched.depth = state.depth !== undefined ? state.depth : Math.min(idx, 4);
+            } else if (vizType === 'linkedlist' || desc.includes('linked') || desc.includes('node') || desc.includes('reverse')) {
+                enriched.type = 'linkedlist';
+                enriched.currentIdx = state.index !== undefined ? state.index : (state.current !== undefined ? state.current : idx % data.length);
+                enriched.reversedIdx = idx;
+                enriched.prevData = state.prev || null;
+            } else if (vizType === 'graph' || desc.includes('visit') || desc.includes('traverse') || desc.includes('bfs') || desc.includes('dfs')) {
+                enriched.type = 'graph';
+                enriched.nodes = algo.vizData;
+                enriched.edges = algo.vizConfig?.edges || [];
+                enriched.visited = state.visited || [];
+                enriched.current = state.current || state.node;
+                enriched.queue = state.queue || state.stack || [];
+            } else {
+                enriched.type = 'search';
+                const idxVal = state.index !== undefined ? state.index : (state.i !== undefined ? state.i : undefined);
+                enriched.comparing = arrIdx(idxVal);
+                enriched.found = desc.includes('found') || desc.includes('return');
+                enriched.target = algo.target;
+
+                function arrIdx(v) {
+                    if (typeof v === 'number' && v >= 0 && v < data.length) return v;
+                    return undefined;
+                }
+            }
+
+            return enriched;
+        });
+        return;
+    }
+
     const data = [...algo.vizData];
 
     switch (algo.vizType) {
         case 'array':
-            generateLinearSearchSteps(algo, data);
+            if (algo.target !== undefined) {
+                generateBinarySearchSteps(algo, data);
+            } else {
+                generateLinearSearchSteps(algo, data);
+            }
             break;
         case 'array-pair':
             generateTwoSumSteps(algo, data);
@@ -149,33 +359,140 @@ function generateAnimationSteps(algo) {
         case 'binary':
             generateBinarySteps(algo, data);
             break;
+        default:
+            generateLinearSearchSteps(algo, data);
+            break;
     }
 }
 
-function generateLinearSearchSteps(algo, data) {
+function generateBinarySearchSteps(algo, data) {
     const target = algo.target;
+    let left = 0;
+    let right = data.length - 1;
+
+    animationSteps.push({
+        type: 'binary-search',
+        data: [...data],
+        left: left,
+        right: right,
+        mid: -1,
+        found: false,
+        target: target,
+        line: 1,
+        desc: `Initialize left=0, right=${right}`
+    });
+
+    while (left <= right) {
+        const mid = Math.floor((left + right) / 2);
+        animationSteps.push({
+            type: 'binary-search',
+            data: [...data],
+            left: left,
+            right: right,
+            mid: mid,
+            found: false,
+            target: target,
+            line: 3,
+            desc: `Calculate mid = (${left} + ${right}) / 2 = ${mid}`
+        });
+
+        if (data[mid] === target) {
+            animationSteps.push({
+                type: 'binary-search',
+                data: [...data],
+                left: left,
+                right: right,
+                mid: mid,
+                found: true,
+                target: target,
+                line: 4,
+                desc: `Found ${target} at index ${mid}!`
+            });
+            return;
+        } else if (data[mid] < target) {
+            animationSteps.push({
+                type: 'binary-search',
+                data: [...data],
+                left: left,
+                right: right,
+                mid: mid,
+                found: false,
+                target: target,
+                line: 6,
+                desc: `arr[${mid}]=${data[mid]} < ${target}, search right half`
+            });
+            left = mid + 1;
+            animationSteps.push({
+                type: 'binary-search',
+                data: [...data],
+                left: left,
+                right: right,
+                mid: -1,
+                found: false,
+                target: target,
+                line: 7,
+                desc: `Update left = ${left}`
+            });
+        } else {
+            animationSteps.push({
+                type: 'binary-search',
+                data: [...data],
+                left: left,
+                right: right,
+                mid: mid,
+                found: false,
+                target: target,
+                line: 8,
+                desc: `arr[${mid}]=${data[mid]} > ${target}, search left half`
+            });
+            right = mid - 1;
+            animationSteps.push({
+                type: 'binary-search',
+                data: [...data],
+                left: left,
+                right: right,
+                mid: -1,
+                found: false,
+                target: target,
+                line: 9,
+                desc: `Update right = ${right}`
+            });
+        }
+    }
+
+    animationSteps.push({
+        type: 'binary-search',
+        data: [...data],
+        left: left,
+        right: right,
+        mid: -1,
+        found: false,
+        target: target,
+        line: 10,
+        desc: `Target ${target} not found in array.`
+    });
+}
+
+function generateLinearSearchSteps(algo, data) {
     for (let i = 0; i < data.length; i++) {
         animationSteps.push({
             type: 'search',
             data: [...data],
             comparing: i,
-            found: data[i] === target,
-            target: target,
-            line: data[i] === target ? 3 : (i < data.length - 1 ? 2 : 5),
-            desc: data[i] === target
-                ? `Found ${target} at index ${i}!`
-                : `Comparing arr[${i}]=${data[i]} with target=${target}...`
+            found: false,
+            target: undefined,
+            line: i,
+            desc: `Processing element arr[${i}] = ${data[i]}`
         });
-        if (data[i] === target) return;
     }
     animationSteps.push({
         type: 'search',
         data: [...data],
         comparing: -1,
         found: false,
-        target: target,
-        line: 5,
-        desc: `Target ${target} not found in array.`
+        target: undefined,
+        line: data.length,
+        desc: 'Processing complete'
     });
 }
 
@@ -221,6 +538,8 @@ function generateSortSteps(algo, data) {
                     desc: `Comparing arr[${j}]=${arr[j]} and arr[${j+1}]=${arr[j+1]}`
                 });
                 if (arr[j] > arr[j + 1]) {
+                    const leftVal = arr[j];
+                    const rightVal = arr[j + 1];
                     [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
                     animationSteps.push({
                         type: 'sort',
@@ -228,7 +547,7 @@ function generateSortSteps(algo, data) {
                         swapping: [j, j + 1],
                         sorted: Array.from({length: i}, (_, k) => n - 1 - k),
                         line: 5,
-                        desc: `Swapped ${arr[j+1]} and ${arr[j]}`
+                        desc: `Swapped ${leftVal} and ${rightVal}`
                     });
                 }
             }
@@ -249,6 +568,8 @@ function generateSortSteps(algo, data) {
                 if (arr[j] < arr[minIdx]) minIdx = j;
             }
             if (minIdx !== i) {
+                const oldMinVal = arr[minIdx];
+                const oldIVal = arr[i];
                 [arr[i], arr[minIdx]] = [arr[minIdx], arr[i]];
                 animationSteps.push({
                     type: 'sort',
@@ -256,7 +577,7 @@ function generateSortSteps(algo, data) {
                     swapping: [i, minIdx],
                     sorted: Array.from({length: i + 1}, (_, k) => k),
                     line: 7,
-                    desc: `Swapped minimum arr[${minIdx}] to position ${i}`
+                    desc: `Swapped arr[${i}]=${oldIVal} with minimum arr[${minIdx}]=${oldMinVal}`
                 });
             }
         }
@@ -448,7 +769,6 @@ function generateLinkedListSteps(algo, data) {
     const n = data.length;
     let prev = null;
     let curr = [...data];
-    let nextArr = curr.slice(1).concat([null]);
 
     for (let i = 0; i < n; i++) {
         animationSteps.push({
@@ -654,7 +974,7 @@ function drawInitialVisualization(algo) {
     const cx = canvas.width / 2;
     const cy = canvas.height / 2;
 
-    ctx.fillStyle = '#6366f1';
+    ctx.fillStyle = '#DA7014';
     ctx.font = '600 16px Inter';
     ctx.textAlign = 'center';
     ctx.fillText(`Ready to visualize: ${algo.name}`, cx, cy - 10);
@@ -671,6 +991,9 @@ function drawVisualization(step) {
         case 'pair':
             drawArrayViz(step);
             break;
+        case 'binary-search':
+            drawBinarySearchViz(step);
+            break;
         case 'sort':
             drawSortViz(step);
             break;
@@ -685,6 +1008,11 @@ function drawVisualization(step) {
             break;
         case 'binary':
             drawBinaryViz(step);
+            break;
+        default:
+            if (step.data) {
+                drawArrayViz({ ...step, type: 'search', comparing: -1, found: false });
+            }
             break;
     }
 }
@@ -704,20 +1032,26 @@ function drawArrayViz(step) {
         let borderColor = 'rgba(255,255,255,0.06)';
 
         if (step.type === 'search') {
-            if (i === step.comparing) {
-                color = step.found ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)';
-                borderColor = step.found ? '#22c55e' : '#ef4444';
+            if (step.comparing === i) {
+                color = step.found ? 'rgba(34,197,94,0.3)' : 'rgba(218,112,20,0.25)';
+                borderColor = step.found ? '#22c55e' : '#DA7014';
                 textColor = '#fff';
             }
         } else if (step.type === 'pair') {
             if (i === step.currentIndex) {
-                color = 'rgba(99,102,241,0.2)';
-                borderColor = '#6366f1';
+                color = 'rgba(218,112,20,0.25)';
+                borderColor = '#DA7014';
                 textColor = '#fff';
             }
             if (step.found && i === step.pairIndex) {
-                color = 'rgba(34,197,94,0.2)';
+                color = 'rgba(34,197,94,0.3)';
                 borderColor = '#22c55e';
+                textColor = '#fff';
+            }
+        } else if (step.comparing !== undefined) {
+            if (step.comparing === i) {
+                color = 'rgba(218,112,20,0.25)';
+                borderColor = '#DA7014';
                 textColor = '#fff';
             }
         }
@@ -741,14 +1075,14 @@ function drawArrayViz(step) {
     }
 
     if (step.type === 'search' && step.target !== undefined) {
-        ctx.fillStyle = '#6366f1';
+        ctx.fillStyle = '#DA7014';
         ctx.font = '500 13px Inter';
         ctx.textAlign = 'center';
         ctx.fillText(`Target: ${step.target}`, canvas.width / 2, startY - 25);
     }
 
     if (step.type === 'pair' && step.target !== undefined) {
-        ctx.fillStyle = '#6366f1';
+        ctx.fillStyle = '#DA7014';
         ctx.font = '500 13px Inter';
         ctx.textAlign = 'center';
         ctx.fillText(`Target sum: ${step.target}`, canvas.width / 2, startY - 25);
@@ -760,6 +1094,91 @@ function drawArrayViz(step) {
         ctx.font = '400 12px JetBrains Mono';
         ctx.textAlign = 'center';
         ctx.fillText(seenStr, canvas.width / 2, startY + boxH + 45);
+    }
+}
+
+function drawBinarySearchViz(step) {
+    const data = step.data;
+    const n = data.length;
+    const boxW = Math.min(70, (canvas.width - 100) / n);
+    const boxH = 50;
+    const startX = (canvas.width - n * boxW) / 2;
+    const startY = canvas.height / 2 - boxH / 2;
+
+    ctx.fillStyle = '#DA7014';
+    ctx.font = '500 13px Inter';
+    ctx.textAlign = 'center';
+    ctx.fillText(`Target: ${step.target}`, canvas.width / 2, startY - 40);
+
+    for (let i = 0; i < n; i++) {
+        const x = startX + i * boxW;
+        let color = '#1e1e2a';
+        let textColor = '#a0a0b5';
+        let borderColor = 'rgba(255,255,255,0.06)';
+
+        if (step.left <= i && i <= step.right) {
+            color = 'rgba(218,112,20,0.1)';
+            borderColor = 'rgba(218,112,20,0.3)';
+        }
+
+        if (step.found && i === step.mid) {
+            color = 'rgba(34,197,94,0.3)';
+            borderColor = '#22c55e';
+            textColor = '#fff';
+        } else if (i === step.mid) {
+            color = 'rgba(245,158,11,0.2)';
+            borderColor = '#f59e0b';
+            textColor = '#fff';
+        } else if (i === step.left) {
+            color = 'rgba(34,197,94,0.15)';
+            borderColor = '#22c55e';
+            textColor = '#22c55e';
+        } else if (i === step.right) {
+            color = 'rgba(239,68,68,0.15)';
+            borderColor = '#ef4444';
+            textColor = '#ef4444';
+        }
+
+        drawRoundRect(ctx, x + 2, startY, boxW - 4, boxH, 6);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.strokeStyle = borderColor;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.fillStyle = textColor;
+        ctx.font = '600 15px JetBrains Mono';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(data[i], x + boxW / 2, startY + boxH / 2);
+
+        ctx.fillStyle = '#6b6b80';
+        ctx.font = '400 11px Inter';
+        ctx.fillText(`[${i}]`, x + boxW / 2, startY + boxH + 16);
+    }
+
+    if (step.mid >= 0) {
+        const midX = startX + step.mid * boxW + boxW / 2;
+        ctx.fillStyle = '#f59e0b';
+        ctx.font = '600 11px Inter';
+        ctx.textAlign = 'center';
+        ctx.fillText('mid', midX, startY - 20);
+    }
+
+    if (step.left >= 0) {
+        const leftX = startX + step.left * boxW + boxW / 2;
+        ctx.fillStyle = '#22c55e';
+        ctx.font = '600 11px Inter';
+        ctx.textAlign = 'center';
+        ctx.fillText('left', leftX, startY - 20);
+    }
+
+    if (step.right >= 0) {
+        const rightX = startX + step.right * boxW + boxW / 2;
+        ctx.fillStyle = '#ef4444';
+        ctx.font = '600 11px Inter';
+        ctx.textAlign = 'center';
+        ctx.fillText('right', rightX, startY - 20);
     }
 }
 
@@ -775,7 +1194,7 @@ function drawSortViz(step) {
     for (let i = 0; i < n; i++) {
         const h = (data[i] / maxVal) * maxH;
         const x = startX + i * boxW;
-        let color = '#6366f1';
+        let color = '#DA7014';
         let borderColor = 'rgba(255,255,255,0.1)';
 
         if (step.sorted && step.sorted.includes(i)) {
@@ -905,7 +1324,7 @@ function drawLinkedListViz(step) {
     };
 
     const drawArrow = (x1, y1, x2, y2) => {
-        ctx.strokeStyle = '#6366f1';
+        ctx.strokeStyle = '#DA7014';
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(x1, y1);
@@ -937,7 +1356,7 @@ function drawLinkedListViz(step) {
         }
     }
 
-    ctx.fillStyle = '#6366f1';
+    ctx.fillStyle = '#DA7014';
     ctx.font = '500 12px Inter';
     ctx.textAlign = 'left';
     ctx.fillText('Current:', 30, 150);
@@ -946,7 +1365,7 @@ function drawLinkedListViz(step) {
         const currStartX = 30;
         for (let i = 0; i < currData.length; i++) {
             const nx = currStartX + i * (nodeW + gap);
-            const color = i === step.currentIdx ? 'rgba(99,102,241,0.25)' : 'rgba(30,30,42,0.9)';
+            const color = i === step.currentIdx ? 'rgba(218,112,20,0.25)' : 'rgba(30,30,42,0.9)';
             drawNode(currData[i], nx, 165, color, i === 0 ? 'curr' : '');
             if (i < currData.length - 1) {
                 drawArrow(nx + nodeW, 165 + nodeH / 2, nx + nodeW + gap, 165 + nodeH / 2);
@@ -997,8 +1416,8 @@ function drawGraphViz(step) {
         let textColor = '#a0a0b5';
 
         if (n === step.current) {
-            color = 'rgba(99,102,241,0.25)';
-            border = '#6366f1';
+            color = 'rgba(218,112,20,0.25)';
+            border = '#DA7014';
             textColor = '#fff';
         } else if (visited.has(n)) {
             color = 'rgba(34,197,94,0.15)';
@@ -1037,7 +1456,7 @@ function drawBinaryViz(step) {
     const startX = cx - (bits.length * boxW) / 2;
     const y = 100;
 
-    ctx.fillStyle = '#6366f1';
+    ctx.fillStyle = '#DA7014';
     ctx.font = '500 14px Inter';
     ctx.textAlign = 'center';
     ctx.fillText(`Value: ${step.value}`, cx, y - 30);
@@ -1045,9 +1464,9 @@ function drawBinaryViz(step) {
     for (let i = 0; i < bits.length; i++) {
         const x = startX + i * boxW;
         drawRoundRect(ctx, x + 2, y, boxW - 4, boxH, 6);
-        ctx.fillStyle = bits[i] === 1 ? 'rgba(99,102,241,0.2)' : 'rgba(30,30,42,0.9)';
+        ctx.fillStyle = bits[i] === 1 ? 'rgba(218,112,20,0.2)' : 'rgba(30,30,42,0.9)';
         ctx.fill();
-        ctx.strokeStyle = bits[i] === 1 ? '#6366f1' : 'rgba(255,255,255,0.06)';
+        ctx.strokeStyle = bits[i] === 1 ? '#DA7014' : 'rgba(255,255,255,0.06)';
         ctx.lineWidth = 1.5;
         ctx.stroke();
 

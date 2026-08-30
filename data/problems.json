@@ -1,0 +1,58 @@
+[
+  {
+    "id": "ps-001",
+    "title": "AI-based Crop Disease Detection",
+    "theme": "Agriculture & FoodTech",
+    "org": "Ministry of Agriculture",
+    "difficulty": "Hard",
+    "description": "Build a solution that detects crop diseases from field images and provides treatment recommendations in regional languages."
+  },
+  {
+    "id": "ps-002",
+    "title": "Smart Traffic Management System",
+    "theme": "Smart Automation",
+    "org": "Ministry of Road Transport",
+    "difficulty": "Medium",
+    "description": "Develop an intelligent traffic signal control system using live traffic density data to reduce congestion in metro cities."
+  },
+  {
+    "id": "ps-003",
+    "title": "Rural Healthcare Telemedicine Platform",
+    "theme": "Healthcare",
+    "org": "Ministry of Health & Family Welfare",
+    "difficulty": "Hard",
+    "description": "Create a low-bandwidth telemedicine platform connecting rural patients with doctors, including e-prescription and record keeping."
+  },
+  {
+    "id": "ps-004",
+    "title": "Waste Segregation & Recycling Assistant",
+    "theme": "Sustainability",
+    "org": "Swachh Bharat Mission",
+    "difficulty": "Medium",
+    "description": "Design a computer-vision based app that identifies waste type and guides users on correct segregation and recycling."
+  },
+  {
+    "id": "ps-005",
+    "title": "Personalised Learning Companion for Students",
+    "theme": "Education & Skill Development",
+    "org": "Ministry of Education",
+    "difficulty": "Medium",
+    "description": "Develop an AI tutor that adapts content difficulty to each student and generates practice questions from NCERT syllabus."
+  },
+  {
+    "id": "ps-006",
+    "title": "FinTech Literacy & Micro-Lending App",
+    "theme": "FinTech",
+    "org": "Ministry of Finance",
+    "difficulty": "Easy",
+    "description": "Build a mobile-first financial literacy app with micro-lending for small business owners in tier-2 and tier-3 cities."
+  },
+  {
+    "id": "ps-007",
+    "title": "Disaster Alert & Relief Coordination",
+    "theme": "Social Impact",
+    "org": "NDMA",
+    "difficulty": "Hard",
+    "description": "Create a real-time disaster alerting and relief coordination dashboard that aggregates data from multiple government APIs."
+  }
+]

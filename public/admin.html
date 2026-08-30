@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | SIH 2026 Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+    <!-- ================= LOGIN GATE ================= -->
+    <div id="loginGate" class="login-gate">
+        <form id="loginForm" class="login-box">
+            <div class="logo" style="justify-content:center; margin-bottom: 10px;">
+                <span class="logo-badge">SIH</span>
+                <span>Admin Dashboard<small style="font-size:0.68rem;">College SIH 2026</small></span>
+            </div>
+            <p class="login-hint">Enter the admin password to manage registrations, teams, and content.</p>
+            <input type="password" id="loginPassword" placeholder="Admin password" autocomplete="current-password">
+            <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Sign In</button>
+            <div id="loginNotice"></div>
+            <a href="index.html" class="back-link">&larr; Back to main site</a>
+        </form>
+    </div>
+
+    <!-- ================= DASHBOARD ================= -->
+    <div id="dashboard" class="hidden">
+        <nav>
+            <div class="nav-inner">
+                <a href="index.html" class="logo">
+                    <span class="logo-badge">SIH</span>
+                    <span>Admin<small>SIH 2026 Portal</small></span>
+                </a>
+                <ul>
+                    <li><a href="#tab-students" class="tab-link" data-tab="students">Students</a></li>
+                    <li><a href="#tab-problems" class="tab-link" data-tab="problems">Problems</a></li>
+                    <li><a href="#tab-teams" class="tab-link" data-tab="teams">Teams</a></li>
+                    <li><a href="#tab-announcements" class="tab-link" data-tab="announcements">Announcements</a></li>
+                    <li><a href="#tab-timeline" class="tab-link" data-tab="timeline">Timeline</a></li>
+                    <li><button id="logoutBtn" class="btn btn-ghost">Logout</button></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Students -->
+        <section class="admin-section" id="tab-students">
+            <div class="container">
+                <div class="section-head">
+                    <div class="kicker">Selection Management</div>
+                    <h2>Student Registrations</h2>
+                    <p>Review registrations, shortlist, select, or reject candidates.</p>
+                </div>
+                <div class="admin-toolbar">
+                    <input type="search" id="studentSearch" placeholder="Search by name, email, roll, branch...">
+                    <select id="studentStatusFilter">
+                        <option value="">All statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="shortlisted">Shortlisted</option>
+                        <option value="selected">Selected</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+                <div class="table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Dept / Section</th>
+                                <th>Tech Stack</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsBody">
+                            <tr><td colspan="5" class="empty-state">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Problems -->
+        <section class="admin-section hidden" id="tab-problems">
+            <div class="container">
+                <div class="section-head">
+                    <div class="kicker">Content Management</div>
+                    <h2>Problem Statements</h2>
+                    <p>Add or remove problem statements shown on the main site.</p>
+                </div>
+                <div class="admin-panel">
+                    <h3>Add Problem Statement</h3>
+                    <form id="problemForm" class="form-grid">
+                        <div class="field">
+                            <label for="pTitle">Title <span class="req">*</span></label>
+                            <input type="text" id="pTitle" required>
+                        </div>
+                        <div class="field">
+                            <label for="pTheme">Theme</label>
+                            <input type="text" id="pTheme" placeholder="e.g. Healthcare">
+                        </div>
+                        <div class="field">
+                            <label for="pOrg">Nodal Ministry / Org</label>
+                            <input type="text" id="pOrg" placeholder="e.g. Ministry of Health">
+                        </div>
+                        <div class="field">
+                            <label for="pDifficulty">Difficulty</label>
+                            <select id="pDifficulty">
+                                <option>Easy</option>
+                                <option selected>Medium</option>
+                                <option>Hard</option>
+                            </select>
+                        </div>
+                        <div class="field full">
+                            <label for="pDescription">Description <span class="req">*</span></label>
+                            <textarea id="pDescription" rows="3" required></textarea>
+                        </div>
+                        <div class="field full">
+                            <button type="submit" class="btn btn-navy">Add Problem Statement</button>
+                        </div>
+                        <div class="field full" id="problemFormNotice"></div>
+                    </form>
+                </div>
+                <div style="height: 30px;"></div>
+                <div class="admin-list" id="problemsList"></div>
+            </div>
+        </section>
+
+        <!-- Teams -->
+        <section class="admin-section hidden" id="tab-teams">
+            <div class="container">
+                <div class="section-head">
+                    <div class="kicker">Team Management</div>
+                    <h2>Teams</h2>
+                    <p>Review formed teams and remove invalid listings.</p>
+                </div>
+                <div class="admin-list" id="teamsList"></div>
+            </div>
+        </section>
+
+        <!-- Announcements -->
+        <section class="admin-section hidden" id="tab-announcements">
+            <div class="container">
+                <div class="section-head">
+                    <div class="kicker">Notices</div>
+                    <h2>Announcements</h2>
+                    <p>Post updates visible on the main site.</p>
+                </div>
+                <div class="admin-panel">
+                    <form id="announceForm" class="form-grid">
+                        <div class="field">
+                            <label for="aTitle">Title <span class="req">*</span></label>
+                            <input type="text" id="aTitle" required>
+                        </div>
+                        <div class="field">
+                            <label for="aDate">Date</label>
+                            <input type="date" id="aDate">
+                        </div>
+                        <div class="field full">
+                            <label for="aBody">Body</label>
+                            <textarea id="aBody" rows="3"></textarea>
+                        </div>
+                        <div class="field full">
+                            <button type="submit" class="btn btn-navy">Post Announcement</button>
+                        </div>
+                        <div class="field full" id="announceFormNotice"></div>
+                    </form>
+                </div>
+                <div style="height: 30px;"></div>
+                <div class="admin-list" id="announcementsList"></div>
+            </div>
+        </section>
+
+        <!-- Timeline -->
+        <section class="admin-section hidden" id="tab-timeline">
+            <div class="container">
+                <div class="section-head">
+                    <div class="kicker">Milestones</div>
+                    <h2>Timeline Events</h2>
+                    <p>Manage the key dates shown on the main site.</p>
+                </div>
+                <div class="admin-panel">
+                    <form id="timelineForm" class="form-grid">
+                        <div class="field">
+                            <label for="tDate">Date <span class="req">*</span></label>
+                            <input type="date" id="tDate" required>
+                        </div>
+                        <div class="field">
+                            <label for="tTitle">Title <span class="req">*</span></label>
+                            <input type="text" id="tTitle" required>
+                        </div>
+                        <div class="field full">
+                            <label for="tDetail">Detail</label>
+                            <textarea id="tDetail" rows="2"></textarea>
+                        </div>
+                        <div class="field full">
+                            <button type="submit" class="btn btn-navy">Add Event</button>
+                        </div>
+                        <div class="field full" id="timelineFormNotice"></div>
+                    </form>
+                </div>
+                <div style="height: 30px;"></div>
+                <div class="admin-list" id="timelineList"></div>
+            </div>
+        </section>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

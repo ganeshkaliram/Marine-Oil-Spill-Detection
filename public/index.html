@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIH 2026 | College Selection &amp; Team Formation</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ================= NAV ================= -->
+    <nav>
+        <div class="nav-inner">
+            <a href="#home" class="logo">
+                <span class="logo-badge">SIH</span>
+                <span>SIH 2026<small>College Selection Portal</small></span>
+            </a>
+            <ul>
+                <li><a href="#about">How It Works</a></li>
+                <li><a href="#problems">Problem Statements</a></li>
+                <li><a href="#timeline">Timeline</a></li>
+                <li><a href="#teams">Teams</a></li>
+                <li><a href="#announcements">Updates</a></li>
+                <li><a href="#auth" class="nav-cta">Login / Register</a></li>
+                <li><a href="admin.html">Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ================= HERO ================= -->
+    <header class="hero" id="home">
+        <div class="container">
+            <div>
+                <span class="eyebrow">Smart India Hackathon 2026</span>
+                <h1>SIH Problem Statement.<br><span class="tricolor">Solve real problems.</span></h1>
+                <p class="sub">
+                    The official internal selection and team-formation portal for our college.
+                    Create your profile, form a team, and invite teammates by tech stack
+                    to represent us at SIH 2026.
+                </p>
+                <div class="hero-btns">
+                    <a href="#auth" class="btn btn-primary">Login / Register</a>
+                    <a href="#problems" class="btn btn-outline">Browse Problem Statements</a>
+                </div>
+            </div>
+            <div class="hero-card">
+                <h3>Selection Snapshot</h3>
+                <div class="stat-row"><span>Registrations Open</span><span>Yes</span></div>
+                <div class="stat-row"><span>Registration Deadline</span><span>15 Aug 2026</span></div>
+                <div class="stat-row"><span>Internal Hackathon</span><span>05 Sep 2026</span></div>
+                <div class="stat-row"><span>Final Teams Announced</span><span>20 Sep 2026</span></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= STATS ================= -->
+    <div class="stats-strip">
+        <div class="container">
+            <div class="stats-grid" id="statsGrid">
+                <div><div class="stat-num">0</div><div class="stat-label">Problem Statements</div></div>
+                <div><div class="stat-num">0</div><div class="stat-label">Students Registered</div></div>
+                <div><div class="stat-num">0</div><div class="stat-label">Teams Formed</div></div>
+                <div><div class="stat-num">6</div><div class="stat-label">Domains / Themes</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= HOW IT WORKS ================= -->
+    <section id="about">
+        <div class="container">
+            <div class="section-head">
+                <div class="kicker">Selection Process</div>
+                <h2>How It Works</h2>
+                <p>Four simple steps from registration to representing the college at SIH 2026.</p>
+            </div>
+            <div class="steps">
+                <div class="step reveal">
+                    <div class="num">1</div>
+                    <h3>Create Your Profile</h3>
+                    <p>Register with your section, department, domain, languages, and tech stack.</p>
+                </div>
+                <div class="step reveal">
+                    <div class="num">2</div>
+                    <h3>Get Shortlisted</h3>
+                    <p>Faculty shortlists candidates based on skills and prior experience.</p>
+                </div>
+                <div class="step reveal">
+                    <div class="num">3</div>
+                    <h3>Create or Join a Team</h3>
+                    <p>Start a team or request to join one. Invite teammates by searching the tech stack you need.</p>
+                </div>
+                <div class="step reveal">
+                    <div class="num">4</div>
+                    <h3>Win the Internal Hackathon</h3>
+                    <p>Compete at the internal hackathon; winning teams go on to SIH 2026.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= PROBLEM STATEMENTS ================= -->
+    <section id="problems" style="background: #fff;">
+        <div class="container">
+            <div class="section-head">
+                <div class="kicker">Innovation Themes</div>
+                <h2>Problem Statements</h2>
+                <p>Browse problem statements from different domains. Filter by theme to find what excites you.</p>
+            </div>
+            <div class="toolbar">
+                <input type="search" id="problemSearch" placeholder="Search problem statements...">
+                <div class="chips" id="themeChips"></div>
+            </div>
+            <div class="problems-grid" id="problemsGrid">
+                <div class="empty-state">Loading problems...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= TIMELINE ================= -->
+    <section id="timeline">
+        <div class="container">
+            <div class="section-head">
+                <div class="kicker">Key Dates</div>
+                <h2>Timeline</h2>
+                <p>Important milestones from registration to the final team announcement.</p>
+            </div>
+            <div class="timeline" id="timeline"></div>
+        </div>
+    </section>
+
+    <!-- ================= TEAM HUB ================= -->
+    <section id="teams" style="background: #fff;">
+        <div class="container">
+            <div class="section-head">
+                <div class="kicker">Team Formation</div>
+                <h2>Team Hub</h2>
+                <p>See who's forming teams and what skills they need. Log in to create a team, join one, or invite teammates by tech stack.</p>
+            </div>
+
+            <div class="team-rules" style="max-width: 620px; margin: 0 auto 34px;">
+                <strong>Team rules:</strong>
+                <span>exactly 6 members</span>
+                <span>at least 2 girls</span>
+                <span>members from at least 2 departments</span>
+            </div>
+
+            <div class="team-form reveal" style="max-width: 560px;">
+                <h3>Teams &amp; Members</h3>
+                <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 18px;">
+                    Browse teams below. <strong>Log in</strong> to create your own team, request to join one,
+                    or search members by tech stack (frontend, ML, UI/UX...) and invite them.
+                </p>
+                <a href="#auth" class="btn btn-primary">Login / Register to Get Started</a>
+            </div>
+
+            <div style="height: 40px;"></div>
+            <div class="teams-grid" id="teamsGrid">
+                <div class="empty-state">Loading teams...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= ANNOUNCEMENTS ================= -->
+    <section id="announcements">
+        <div class="container">
+            <div class="section-head">
+                <div class="kicker">News &amp; Notices</div>
+                <h2>Announcements</h2>
+                <p>Latest updates from the SIH 2026 coordination committee.</p>
+            </div>
+            <div class="announce-list" id="announceList">
+                <div class="empty-state">Loading announcements...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= AUTH (LOGIN / REGISTER) ================= -->
+    <section id="auth" style="background: #fff;">
+        <div class="container">
+            <div class="section-head">
+                <div class="kicker">Get Started</div>
+                <h2>Login / Register</h2>
+                <p>Create your profile to participate in the internal selection for SIH 2026.</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-form="login">Login</button>
+                <button class="auth-tab" data-form="register">Register</button>
+            </div>
+
+            <!-- LOGIN -->
+            <div class="register-card reveal" id="loginCard" style="max-width: 520px;">
+                <form id="loginForm" class="form-grid">
+                    <div class="field full">
+                        <label for="lPhone">Phone Number <span class="req">*</span></label>
+                        <input type="tel" id="lPhone" required placeholder="e.g. 9876500001">
+                    </div>
+                    <div class="field full">
+                        <label for="lPassword">Password <span class="req">*</span></label>
+                        <input type="password" id="lPassword" required placeholder="Your password">
+                    </div>
+                    <div class="field full">
+                        <button type="submit" class="btn btn-primary">Log In</button>
+                    </div>
+                    <div class="field full" id="loginNotice"></div>
+                </form>
+            </div>
+
+            <!-- REGISTER -->
+            <div class="register-card reveal hidden" id="registerCard">
+                <form id="registerForm" class="form-grid">
+                    <div class="field">
+                        <label for="rName">Name <span class="req">*</span></label>
+                        <input type="text" id="rName" required placeholder="e.g. Aarav Sharma">
+                    </div>
+                    <div class="field">
+                        <label for="rSection">Section <span class="req">*</span></label>
+                        <input type="text" id="rSection" required placeholder="e.g. A">
+                    </div>
+                    <div class="field">
+                        <label for="rDepartment">Department <span class="req">*</span></label>
+                        <select id="rDepartment" required>
+                            <option value="">Select department</option>
+                            <option>Electrical and Electronics Engineering</option>
+                            <option>Electronics and Communication Engineering</option>
+                            <option>Computer Science Engineering</option>
+                            <option>Information Technology</option>
+                            <option>Instrumentation and Control Engineering</option>
+                            <option>Mechanical Engineering</option>
+                            <option>Civil Engineering</option>
+                            <option>Biomedical Engineering</option>
+                            <option>Mechatronics</option>
+                            <option>Artificial Intelligence and Data Science</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="rDomain">Domain</label>
+                        <input type="text" id="rDomain" placeholder="e.g. Artificial Intelligence, Healthcare">
+                    </div>
+                    <div class="field full">
+                        <label>Language</label>
+                        <div class="skills-input">
+                            <input type="text" id="rLanguage" placeholder="e.g. Python">
+                            <button type="button" class="btn btn-ghost" id="addLangBtn">Add</button>
+                        </div>
+                        <div class="skills-tags" id="rLangTags"></div>
+                    </div>
+                    <div class="field">
+                        <label for="rGender">Gender <span class="req">*</span></label>
+                        <select id="rGender" required>
+                            <option value="">Select gender</option>
+                            <option>Male</option>
+                            <option>Female</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="rGithub">GitHub Link</label>
+                        <input type="text" id="rGithub" placeholder="e.g. github.com/username">
+                    </div>
+                    <div class="field">
+                        <label for="rPhone">Phone Number <span class="req">*</span></label>
+                        <input type="tel" id="rPhone" required placeholder="e.g. 9876500001">
+                    </div>
+                    <div class="field">
+                        <label for="rStack">Tech Stack</label>
+                        <input type="text" id="rStack" placeholder="e.g. Frontend, ML">
+                    </div>
+                    <div class="field full">
+                        <label for="rPassword">Password <span class="req">*</span></label>
+                        <input type="password" id="rPassword" required placeholder="Create a password (min 4 characters)">
+                    </div>
+                    <div class="field full">
+                        <label for="rPassword2">Confirm Password <span class="req">*</span></label>
+                        <input type="password" id="rPassword2" required placeholder="Re-enter password">
+                    </div>
+                    <div class="field full">
+                        <button type="submit" class="btn btn-primary">Create Account</button>
+                    </div>
+                    <div class="field full" id="registerNotice"></div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= FOOTER ================= -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="logo" style="color:#fff; margin-bottom: 10px;">
+                        <span class="logo-badge">SIH</span>
+                        <span>SIH 2026<small style="color:#9fb0cc;">College Selection Portal</small></span>
+                    </div>
+                    <p style="font-size: 0.9rem;">Internal portal for Smart India Hackathon 2026 selection, problem-statement allocation, and team formation at our college.</p>
+                </div>
+                <div>
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#about">How It Works</a></li>
+                        <li><a href="#problems">Problem Statements</a></li>
+                        <li><a href="#timeline">Timeline</a></li>
+                        <li><a href="#auth">Login / Register</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Coordination</h4>
+                    <ul>
+                        <li>SIH Cell, Innovation &amp; Incubation Centre</li>
+                        <li><a href="admin.html">Admin Dashboard</a></li>
+                        <li>Email: sih2026@college.edu</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; 2026 College SIH 2026 Coordination Committee. All rights reserved. | Sample data for demonstration.
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

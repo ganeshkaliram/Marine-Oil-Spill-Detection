@@ -1,0 +1,121 @@
+/* ==========================================================================
+   Dashboard styles (logged-in experience)
+   ========================================================================== */
+
+/* ---------- Top bar ---------- */
+.user-chip {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.user-chip-info { text-align: right; }
+.user-chip-info strong { display: block; color: var(--navy); font-size: 0.92rem; }
+.user-chip-info small { color: var(--muted); font-size: 0.74rem; }
+
+.dash-nav a.active { color: var(--navy); border-bottom: 2px solid var(--saffron); }
+
+.dash-section { display: none; padding: 40px 0 70px; }
+.dash-section.active { display: block; }
+.dash-section .section-head { margin-bottom: 34px; }
+
+/* ---------- Panels ---------- */
+.dash-panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px;
+    max-width: 720px;
+    margin: 0 auto;
+}
+.dash-panel h3 { color: var(--navy); margin-bottom: 16px; }
+
+/* ---------- Find members ---------- */
+.find-toolbar {
+    display: flex;
+    gap: 10px;
+    max-width: 640px;
+    margin: 0 auto 14px;
+}
+.find-toolbar input[type="search"] {
+    flex: 1;
+    padding: 13px 16px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+}
+.find-toolbar input[type="search"]:focus { border-color: var(--saffron); }
+
+.search-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-bottom: 30px;
+}
+
+.users-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    max-width: 1020px;
+    margin: 0 auto;
+}
+.user-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.user-card .top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.user-card h3 { color: var(--navy); font-size: 1.05rem; }
+.user-card .meta { color: var(--muted); font-size: 0.8rem; }
+.user-card .pills { display: flex; flex-wrap: wrap; gap: 5px; }
+.user-card .github { color: var(--saffron); font-size: 0.8rem; font-weight: 600; word-break: break-all; }
+.user-card .btn { margin-top: 4px; justify-content: center; }
+.user-card .team-note { font-size: 0.78rem; color: var(--muted); }
+
+/* ---------- Invites ---------- */
+.invite-block { margin-bottom: 20px; }
+.invite-block h4 { color: var(--navy); margin-bottom: 10px; font-size: 0.95rem; }
+.invite-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    background: #fafbfe;
+}
+.invite-item .main { font-weight: 700; color: var(--navy); font-size: 0.92rem; }
+.invite-item .meta { color: var(--muted); font-size: 0.8rem; }
+.invite-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.status-pill {
+    font-size: 0.74rem; font-weight: 700;
+    padding: 4px 10px; border-radius: 100px;
+    background: #eef1f7; color: #5a6b85;
+}
+.status-pill.done { background: #e3f4e3; color: #1d7a1d; }
+.status-pill.no { background: #fde8e8; color: #c0392b; }
+
+/* ---------- My team card ---------- */
+#myTeamCard { max-width: 720px; margin: 0 auto; }
+
+@media (max-width: 900px) {
+    .dash-nav { gap: 12px; }
+}
+@media (max-width: 640px) {
+    .user-chip-info { display: none; }
+    .invite-item { flex-direction: column; align-items: flex-start; }
+}

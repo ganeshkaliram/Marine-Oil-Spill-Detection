@@ -1,0 +1,84 @@
+[
+  {
+    "id": "tm-001",
+    "name": "Team CodeSprint",
+    "leaderId": "st-001",
+    "problemId": "ps-002",
+    "problemTitle": "Smart Traffic Management System",
+    "members": [
+      {
+        "userId": "st-001",
+        "name": "Aarav Sharma",
+        "gender": "Male",
+        "department": "Computer Science Engineering",
+        "role": "Team Leader"
+      },
+      {
+        "userId": "st-002",
+        "name": "Priya Patel",
+        "gender": "Female",
+        "department": "Computer Science Engineering",
+        "role": "UI/UX Designer"
+      },
+      {
+        "userId": "st-003",
+        "name": "Rohan Verma",
+        "gender": "Male",
+        "department": "Electronics and Communication Engineering",
+        "role": "IoT Developer"
+      },
+      {
+        "userId": "st-004",
+        "name": "Sneha Iyer",
+        "gender": "Female",
+        "department": "Information Technology",
+        "role": "Frontend Developer"
+      },
+      {
+        "userId": "st-005",
+        "name": "Meera Nair",
+        "gender": "Female",
+        "department": "Instrumentation and Control Engineering",
+        "role": "Hardware Engineer"
+      },
+      {
+        "userId": "st-006",
+        "name": "Kabir Singh",
+        "gender": "Male",
+        "department": "Mechanical Engineering",
+        "role": "CAD Designer"
+      }
+    ],
+    "lookingFor": [],
+    "created": "2026-07-30T11:00:00Z"
+  },
+  {
+    "id": "tm-002",
+    "name": "Team Innovators",
+    "leaderId": "st-007",
+    "problemId": "ps-001",
+    "problemTitle": "AI-based Crop Disease Detection",
+    "members": [
+      {
+        "userId": "st-007",
+        "name": "Ananya Gupta",
+        "gender": "Female",
+        "department": "Computer Science Engineering",
+        "role": "Team Leader"
+      },
+      {
+        "userId": "st-008",
+        "name": "Vikram Rao",
+        "gender": "Male",
+        "department": "Information Technology",
+        "role": "Backend Developer"
+      }
+    ],
+    "lookingFor": [
+      "Frontend Developer",
+      "ML Engineer",
+      "UI/UX Designer"
+    ],
+    "created": "2026-08-01T09:00:00Z"
+  }
+]
