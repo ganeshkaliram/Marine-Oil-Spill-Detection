@@ -1,0 +1,29 @@
+[
+  {
+    "id": "slick_697838a78b3d",
+    "scene_id": "S1A_live",
+    "detected_at": "2026-08-30T13:28:27.165897Z",
+    "source_sensor": "sentinel-1",
+    "polarization": "VV+VH",
+    "geometry": {
+      "centroid_lat": 10.5,
+      "centroid_lon": 10.5,
+      "area_m2": 2500000.0,
+      "perimeter_m": 9000.0,
+      "bbox_px": [
+        100,
+        100,
+        300,
+        250
+      ],
+      "pixel_coords": []
+    },
+    "confidence": 0.93,
+    "estimated_age_hours": 4.0,
+    "weathering": "moderate",
+    "oil_type": "crude-oil",
+    "model_meta": {
+      "histogram_bin": "thick/emulsion"
+    }
+  }
+]

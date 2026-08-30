@@ -32,6 +32,7 @@ app.include_router(attribution.router, prefix="/api/v1/attribution", tags=["attr
 
 
 @app.get("/health", tags=["system"])
+@app.get("/api/health", tags=["system"], include_in_schema=False)
 def health() -> dict:
     return {"status": "ok", "version": settings.API_VERSION}
 

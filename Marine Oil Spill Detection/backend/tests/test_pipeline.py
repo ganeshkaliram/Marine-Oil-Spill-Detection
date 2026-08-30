@@ -92,6 +92,23 @@ class TestAttribution:
         assert report.top_suspect is not None
         assert report.top_suspect.mmsi == 1  # near vessel wins
 
+    def test_correlation_card_fields(self):
+        """Output matches the human-facing correlation card format."""
+        slick = self._make_slick(lat=10.0, lon=10.0)
+        near = VesselTrack(
+            mmsi=1, vessel_class=AisVesselClass.TANKER,
+            points=[_msg(1, 10.002, 10.002, T0, sog=2.0)], trust_score=1.0,
+        )
+        report = AttributionService().attribute(slick, [near])
+        s = report.top_suspect
+        assert s is not None
+        assert 0.0 <= s.correlation_score <= 1.0
+        # ~0.3 km away -> distance small, intersection True
+        assert s.distance_from_spill_km < 1.0
+        assert s.track_intersection is True
+        assert s.vessel_speed_knots == 2.0
+        assert s.vessel_class == AisVesselClass.TANKER
+
     def test_spoofed_track_excluded(self):
         slick = self._make_slick()
         untrusted = VesselTrack(

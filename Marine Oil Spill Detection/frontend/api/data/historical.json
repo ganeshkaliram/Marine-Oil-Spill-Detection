@@ -1,0 +1,24 @@
+[
+  {
+    "id": "hist_001",
+    "centroid": {
+      "lat": 12.8,
+      "lon": 44.3
+    },
+    "area_m2": 5100000.0,
+    "oil_type": "heavy-fuel-oil",
+    "status": "historical",
+    "detected_at": "2026-08-18T15:28:27.166218+00:00"
+  },
+  {
+    "id": "hist_002",
+    "centroid": {
+      "lat": -1.9,
+      "lon": 104.8
+    },
+    "area_m2": 3400000.0,
+    "oil_type": "light-diesel",
+    "status": "historical",
+    "detected_at": "2026-07-21T15:28:27.166218+00:00"
+  }
+]

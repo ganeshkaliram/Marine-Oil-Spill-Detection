@@ -9,9 +9,9 @@ export default function App() {
   return (
     <>
       <header className="topbar">
-        <span className="brand">🛰️ Oil Spill Attribution</span>
+        <span className="brand">🛰️ Marine Oil Spill Detection</span>
         <nav>
-          <NavLink to="/">Dashboard</NavLink>
+          <NavLink to="/">Monitoring Dashboard</NavLink>
         </nav>
       </header>
       <Routes>

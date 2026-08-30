@@ -5,22 +5,26 @@ from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+# Resolve every path relative to THIS file so nothing breaks regardless of the
+# process working directory (localhost, scripts, or a container).
+_PROJECT_ROOT = Path(__file__).resolve().parents[2]  # backend/app/config -> project root
+
 
 class Settings(BaseSettings):
     """Application settings loaded from environment / .env file."""
 
     model_config = SettingsConfigDict(
-        env_file="../../.env",
+        env_file=str(_PROJECT_ROOT / ".env"),
         env_file_encoding="utf-8",
         extra="ignore",
     )
 
-    # Paths (relative to repo root)
-    DATA_RAW_DIR: Path = Path("../../data/raw")
-    DATA_PROCESSED_DIR: Path = Path("../../data/processed")
+    # Paths (relative to project root, resolved above)
+    DATA_RAW_DIR: Path = _PROJECT_ROOT / "data" / "raw"
+    DATA_PROCESSED_DIR: Path = _PROJECT_ROOT / "data" / "processed"
 
     # Detection model
-    DETECTION_MODEL_WEIGHTS: Path = Path("backend/app/models/weights")
+    DETECTION_MODEL_WEIGHTS: Path = _PROJECT_ROOT / "backend" / "app" / "models" / "weights"
     DETECTION_THRESHOLD: float = 0.5
     DETECTION_INPUT_SIZE: int = 512
     MODEL_BACKBONE: str = "resnet34"

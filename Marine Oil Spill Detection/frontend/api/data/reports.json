@@ -1,0 +1,47 @@
+[
+  {
+    "slick_id": "slick_697838a78b3d",
+    "generated_at": "2026-08-30T15:28:27.166354Z",
+    "origin_candidates": [],
+    "suspect_vessels": [
+      {
+        "mmsi": 413000111,
+        "vessel_name": "MT SUSPECT-ONE",
+        "vessel_class": "tanker",
+        "vessel_cargo": null,
+        "correlation_score": 0.894,
+        "distance_from_spill_km": 1.09,
+        "track_intersection": true,
+        "vessel_speed_knots": 0.8,
+        "vessel_direction_deg": 160.0,
+        "proximity_score": 0.9781334085370269,
+        "trajectory_score": 1.0,
+        "behavior_score": 0.525,
+        "evidence": {
+          "trust_score": 1.0,
+          "anomaly_count": 0,
+          "consistent_points": 4
+        }
+      }
+    ],
+    "top_suspect": {
+      "mmsi": 413000111,
+      "vessel_name": "MT SUSPECT-ONE",
+      "vessel_class": "tanker",
+      "vessel_cargo": null,
+      "correlation_score": 0.894,
+      "distance_from_spill_km": 1.09,
+      "track_intersection": true,
+      "vessel_speed_knots": 0.8,
+      "vessel_direction_deg": 160.0,
+      "proximity_score": 0.9781334085370269,
+      "trajectory_score": 1.0,
+      "behavior_score": 0.525,
+      "evidence": {
+        "trust_score": 1.0,
+        "anomaly_count": 0,
+        "consistent_points": 4
+      }
+    }
+  }
+]

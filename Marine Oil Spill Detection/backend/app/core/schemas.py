@@ -41,6 +41,7 @@ class SlickDetection(BaseModel):
     confidence: float = Field(ge=0.0, le=1.0)
     estimated_age_hours: float | None = None
     weathering: str | None = None       # e.g. "fresh", "moderate", "weathered"
+    oil_type: str | None = None         # from histogram/spectral analysis of spill pixels
     model_meta: dict = Field(default_factory=dict)
 
 
@@ -88,6 +89,7 @@ class VesselTrack(BaseModel):
     """Smoothed trajectory of a vessel after anomaly filtering."""
 
     mmsi: int
+    vessel_name: str | None = None
     vessel_class: AisVesselClass | None = None
     points: list[AisMessage]
     trust_score: float = Field(ge=0.0, le=1.0)  # 1.0 = fully trusted
@@ -100,14 +102,28 @@ class VesselTrack(BaseModel):
 
 
 class AttributionScore(BaseModel):
-    """Composite score attributing a slick to a single vessel."""
+    """Composite score attributing a slick to a single vessel.
+
+    Mirrors the human-facing correlation card:
+        Likely vessel / Correlation score / Distance from spill / Track intersection
+    """
 
     mmsi: int
+    vessel_name: str | None = None
     vessel_class: AisVesselClass | None = None
+    vessel_cargo: str | None = None        # e.g. "crude oil", "chemical X"
+
+    # Correlation card fields
+    correlation_score: float = Field(ge=0.0, le=1.0)   # 0..1 -> 87%
+    distance_from_spill_km: float = Field(ge=0.0)       # e.g. 2.4
+    track_intersection: bool = False                    # route intersects spill
+    vessel_speed_knots: float = Field(default=0.0, ge=0.0)
+    vessel_direction_deg: float = Field(default=0.0, ge=0.0, le=360.0)
+
+    # Keep detailed scoring signals (computed independently)
     proximity_score: float = Field(ge=0.0, le=1.0)
     trajectory_score: float = Field(ge=0.0, le=1.0)
     behavior_score: float = Field(ge=0.0, le=1.0)
-    overall_confidence: float = Field(ge=0.0, le=1.0)
     evidence: dict = Field(default_factory=dict)
 
 
