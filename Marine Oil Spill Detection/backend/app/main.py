@@ -3,7 +3,7 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import attribution, attribution_demo, detections, detections_demo
+from app.api import ais, attribution, attribution_demo, detections, detections_demo
 from app.config import settings
 
 app = FastAPI(
@@ -29,6 +29,7 @@ app.include_router(detections_demo.router, prefix="/api/v1/detections", tags=["d
 app.include_router(detections.router, prefix="/api/v1/detections", tags=["detections"])
 app.include_router(attribution_demo.router, prefix="/api/v1/attribution", tags=["attribution-demo"])
 app.include_router(attribution.router, prefix="/api/v1/attribution", tags=["attribution"])
+app.include_router(ais.router, prefix="/api/v1/ais", tags=["ais"])
 
 
 @app.get("/health", tags=["system"])

@@ -118,3 +118,28 @@ class TestAttribution:
         report = AttributionService().attribute(slick, [untrusted])
         assert report.suspect_vessels == []
         assert report.top_suspect is None
+
+
+class TestLiveVessels:
+    def test_positions_in_monitoring_box(self):
+        from app.ais.live import live_vessel_positions
+
+        pos = live_vessel_positions()
+        assert len(pos) > 0
+        for v in pos:
+            assert 8.0 <= v["lat"] <= 13.0
+            assert 8.0 <= v["lon"] <= 13.0
+            for key in ("mmsi", "name", "vessel_type", "lat", "lon", "sog_knots", "cog_deg"):
+                assert key in v
+
+    def test_vessels_move_over_time(self):
+        from app.ais.live import live_vessel_positions
+        import time as _t
+
+        a = {v["mmsi"]: (v["lat"], v["lon"]) for v in live_vessel_positions()}
+        _t.sleep(1.2)
+        b = {v["mmsi"]: (v["lat"], v["lon"]) for v in live_vessel_positions()}
+        # A fast vessel must have moved (coordinates changed).
+        fast = max(b, key=lambda m: a.get(m, (0, 0))[0])  # any mmsi present in both
+        moved = any(b[m] != a.get(m) for m in a)
+        assert moved is True
