@@ -1,2 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+backend/.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Env / secrets
+.env
+*.env.local
+
+# Node / frontend
 node_modules/
-.vercel/
+frontend/dist/
+frontend/.vite/
+*.local
+
+# Data (large artifacts, keep structure not files)
+data/raw/**
+!data/raw/**/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+# Model weights (large binaries)
+backend/app/models/weights/*
+!backend/app/models/weights/.gitkeep
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+
+# Demo data
+demo_*
