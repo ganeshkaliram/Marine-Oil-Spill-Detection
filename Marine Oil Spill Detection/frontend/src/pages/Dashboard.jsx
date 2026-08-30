@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import maplibregl from "maplibre-gl";
 
 // Relative paths work in dev (Vite proxies /api -> localhost:8000) and on Vercel.
 const API = import.meta.env.VITE_API_URL || "";
-const VESSEL_REFRESH_MS = 3000;   // live vessel movement cadence
 const DATA_REFRESH_MS = 15000;    // spills / attribution refresh
 
 // MarineTraffic-style dark ocean basemap (raster from CARTO).
@@ -43,6 +42,65 @@ export default function Dashboard() {
   const [suspectMmsi, setSuspectMmsi] = useState(null);
   const [status, setStatus] = useState("Connecting…");
 
+  // --- SSE connection for real-time vessel positions ---
+  const esRef = useRef(null);
+  const reconnectTimer = useRef(null);
+
+  const connectSSE = useCallback(() => {
+    if (esRef.current) {
+      esRef.current.close();
+    }
+    try {
+      const es = new EventSource(`${API}/api/v1/ais/stream`);
+      esRef.current = es;
+
+      es.addEventListener("vessel_update", (e) => {
+        try {
+          const msg = JSON.parse(e.data);
+          if (msg.data && Array.isArray(msg.data)) {
+            setVessels(msg.data);
+            updateVesselMarkers(msg.data);
+          }
+        } catch (err) { /* ignore parse errors */ }
+      });
+
+      es.addEventListener("alert", (e) => {
+        try {
+          const msg = JSON.parse(e.data);
+          // Refresh spill data when an alert arrives
+          refreshData();
+        } catch (err) { /* ignore */ }
+      });
+
+      es.addEventListener("heartbeat", (e) => {
+        // Connection is alive
+      });
+
+      es.onerror = () => {
+        es.close();
+        // Reconnect after 5 seconds
+        reconnectTimer.current = setTimeout(connectSSE, 5000);
+        // Fallback to REST polling while SSE is down
+        startFallbackPolling();
+      };
+    } catch (err) {
+      // SSE not supported or URL wrong — use REST polling
+      startFallbackPolling();
+    }
+  }, []);
+
+  const fallbackInterval = useRef(null);
+  const startFallbackPolling = useCallback(() => {
+    if (fallbackInterval.current) return; // already polling
+    fallbackInterval.current = setInterval(async () => {
+      try {
+        const list = await fetch(`${API}/api/v1/ais/live`).then((x) => x.json());
+        setVessels(list);
+        updateVesselMarkers(list);
+      } catch (e) { /* skip */ }
+    }, 3000);
+  }, []);
+
   useEffect(() => {
     const map = new maplibregl.Map({
       container: mapContainer.current,
@@ -55,10 +113,15 @@ export default function Dashboard() {
 
     refreshData();
     const tData = setInterval(refreshData, DATA_REFRESH_MS);
-    const tVessels = setInterval(refreshVessels, VESSEL_REFRESH_MS);
+
+    // Start SSE connection for real-time vessel positions
+    connectSSE();
+
     return () => {
       clearInterval(tData);
-      clearInterval(tVessels);
+      if (fallbackInterval.current) clearInterval(fallbackInterval.current);
+      if (reconnectTimer.current) clearTimeout(reconnectTimer.current);
+      if (esRef.current) esRef.current.close();
       map.remove();
     };
   }, []);
@@ -81,15 +144,7 @@ export default function Dashboard() {
     }
   }
 
-  async function refreshVessels() {
-    try {
-      const list = await fetch(`${API}/api/v1/ais/live`).then((x) => x.json());
-      setVessels(list);
-      updateVesselMarkers(list);
-    } catch (e) {
-      /* backend not reachable yet — skip */
-    }
-  }
+  // refreshVessels is replaced by SSE — vessels arrive via event listener above
 
   function updateVesselMarkers(list) {
     const map = mapRef.current;
@@ -179,16 +234,35 @@ export default function Dashboard() {
           <span><i className="lg lg-spill" /> Spill alert</span>
         </div>
 
+        <div className={`feed-status ${status.includes("LIVE") ? "connected" : "simulation"}`}>
+          <span className="feed-dot" />
+          {esRef.current?.readyState === 1 ? "SSE connected" : "REST polling"}
+        </div>
+
         <h3 className="section-title">LIVE VESSELS — {vessels.length}</h3>
         <div className="vessel-list">
           {vessels.map((v) => (
             <div key={v.mmsi} className={`vessel-row ${v.mmsi === suspectMmsi ? "suspect" : ""}`}>
               <span className={`mini-boat ${v.vessel_type}`} />
-              <div>
+              <div style={{flex: 1, minWidth: 0}}>
                 <div className="v-name">{v.name} {v.mmsi === suspectMmsi && "🔎"}</div>
                 <div className="v-meta">
                   {v.vessel_type} · {v.sog_knots} kn · {v.cog_deg}°
                 </div>
+                {(v.destination || v.cargo_type || v.eta) && (
+                  <div className="v-trader-info">
+                    {v.destination && <span className="v-dest">→ {v.destination}</span>}
+                    {v.cargo_type && <span className="v-cargo">📦 {v.cargo_type}</span>}
+                    {v.eta && <span className="v-eta">ETA {new Date(v.eta).toLocaleDateString()}</span>}
+                  </div>
+                )}
+                {v.trust_score !== undefined && v.trust_score < 1.0 && (
+                  <div className="v-trust">
+                    <span className="trust-badge" style={{opacity: 0.4 + v.trust_score * 0.6}}>
+                      ⚠ trust {Math.round(v.trust_score * 100)}%
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           ))}
